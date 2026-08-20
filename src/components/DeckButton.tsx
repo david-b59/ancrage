@@ -31,11 +31,11 @@ export function DeckButton({ deck, due, pct, disabled, onStart }: DeckButtonProp
       onClick={onStart}
       disabled={disabled}
       aria-label={label}
-      className="mb-2.5 flex w-full items-center gap-3 rounded-2xl border border-line bg-surface p-4 text-left transition-transform active:scale-[0.985] disabled:opacity-50 disabled:active:scale-100"
+      className="mb-2.5 flex w-full items-center gap-3 rounded-2xl border border-line bg-surface p-4 text-left transition-transform active:scale-[0.985] disabled:opacity-50 disabled:active:scale-100 md:mb-3 md:p-5"
     >
       <span className="min-w-0 flex-1">
-        <span className="mb-0.5 block text-base font-semibold">{deck.name}</span>
-        <span className="block text-xs text-dim">{deck.sub}</span>
+        <span className="mb-0.5 block text-base font-semibold md:text-lg">{deck.name}</span>
+        <span className="block text-xs text-dim md:text-[13px]">{deck.sub}</span>
       </span>
       <ProgressRing pct={pct} due={due} />
     </button>

@@ -17,7 +17,7 @@ interface PanelProps {
  */
 export function Panel({ title, children }: PanelProps) {
   return (
-    <section className="mt-3 rounded-xl border border-line bg-surface px-4 py-4">
+    <section className="mt-3 rounded-xl border border-line bg-surface px-4 py-4 md:mt-4 md:px-5 md:py-5">
       <h3 className="mb-2 font-mono text-[10.5px] font-semibold tracking-[0.18em] text-dim uppercase">
         {title}
       </h3>

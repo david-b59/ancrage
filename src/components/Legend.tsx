@@ -14,11 +14,13 @@ const KEYS = [
 /** Affiche la légende de l'accueil. */
 export function Legend() {
   return (
-    <section className="mt-5 rounded-xl border border-edge border-l-4 border-l-amber bg-elevated px-4 py-4">
+    // `lg:mt-0` : en deux colonnes, cet encadré ouvre la colonne de droite et doit
+    // s'aligner sur le haut du titre, pas flotter plus bas que lui.
+    <section className="mt-5 rounded-xl border border-edge border-l-4 border-l-amber bg-elevated px-4 py-4 md:px-5 md:py-5 lg:mt-0">
       <h3 className="mb-2.5 font-mono text-[10.5px] font-semibold tracking-[0.18em] text-amber uppercase">
         Comment lire cet écran
       </h3>
-      <p className="mb-2.5 text-[13px] leading-relaxed text-muted">
+      <p className="mb-2.5 text-[13px] leading-relaxed text-muted md:text-sm">
         Le chiffre dans l'anneau = cartes à revoir aujourd'hui. L'anneau qui se remplit = part du paquet déjà
         ancrée.
       </p>

@@ -7,8 +7,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CARDS, DECKS, MODE_ORDER } from './data/cards';
 import type { Card, DeckId, ModeId } from './data/types';
+import { DESKTOP_QUERY, useMediaQuery } from './hooks/useMediaQuery';
 import { useProgress } from './hooks/useProgress';
 import { useRecognition, useSpeech } from './hooks/useSpeech';
+import { useStudyShortcuts } from './hooks/useStudyShortcuts';
 import { INTELLIGIBLE_AT, scorePronunciation } from './lib/speech';
 import { AGAIN, GOOD, HARD, buildSession, cardId, previewDelay, type Grade } from './lib/srs';
 import { exportProgress, importProgress } from './lib/storage';
@@ -131,8 +133,27 @@ export default function App() {
     [replaceProgress],
   );
 
+  // En Prononciation la phrase cible est visible d'emblée : il n'y a rien à
+  // retourner, et la notation s'ouvre dès le premier essai au micro.
+  const isPronounce = mode === 'pronounce';
+  const canFlip = session !== null && card !== null && !isPronounce && !session.flipped;
+  const canGrade = session !== null && card !== null && (isPronounce ? result !== null : session.flipped);
+
+  const isDesktop = useMediaQuery(DESKTOP_QUERY);
+  useStudyShortcuts({
+    enabled: isDesktop && session !== null && card !== null,
+    canFlip,
+    canGrade,
+    onFlip: flip,
+    onGrade: grade,
+    onQuit: quit,
+  });
+
+  // Les trois paliers de la mise en page. Le téléphone reste la référence : les
+  // classes sans préfixe sont les siennes, `md:` élargit la colonne unique,
+  // `lg:` ouvre la seconde colonne de l'accueil.
   const shell =
-    'mx-auto flex min-h-dvh w-full max-w-[600px] flex-col px-[18px] pt-5 pb-[calc(28px+env(safe-area-inset-bottom))]';
+    'mx-auto flex min-h-dvh w-full max-w-[600px] flex-col px-[18px] pt-5 pb-[calc(28px+env(safe-area-inset-bottom))] md:max-w-[720px] md:px-6 md:pt-8 lg:max-w-[1280px] lg:px-8 lg:pt-10';
 
   if (!session) {
     return (
@@ -176,6 +197,8 @@ export default function App() {
         total={session.queue.length}
         mode={mode}
         flipped={session.flipped}
+        showGrades={canGrade}
+        showShortcuts={isDesktop}
         delays={[
           previewDelay(state, AGAIN, today),
           previewDelay(state, HARD, today),

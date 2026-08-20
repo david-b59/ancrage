@@ -57,6 +57,31 @@ liste. Aucune erreur n'est affichée.
 Un bouton copie la progression au format JSON dans le presse-papiers, un champ permet de la
 recoller. Le remplacement demande une confirmation explicite.
 
+## Mise en page
+
+Trois paliers, le téléphone en premier — c'est là que la révision a lieu.
+
+| Largeur       | Mise en page                                                                                                      |
+| ------------- | ----------------------------------------------------------------------------------------------------------------- |
+| < 768 px      | colonne unique de 600 px, cibles tactiles d'au moins 44 px, actions dans la moitié basse                          |
+| 768 – 1023 px | colonne unique élargie à 720 px, typographie et cartes un cran plus grandes                                       |
+| ≥ 1024 px     | deux colonnes dans 1280 px centrés : à gauche titre, progression, modes et paquets ; à droite légende et réglages |
+
+En session de révision, la colonne reste centrée et plafonnée à 760 px quelle que soit la
+largeur de l'écran : la carte doit dominer, pas s'étirer jusqu'aux bords.
+
+**Raccourcis clavier**, au-delà de 1024 px uniquement, rappelés sous la carte :
+
+| Touche      | Effet                            |
+| ----------- | -------------------------------- |
+| `Espace`    | retourne la carte                |
+| `1` `2` `3` | À revoir / Difficile / Je savais |
+| `Échap`     | quitte le paquet                 |
+
+Ils ne se déclenchent jamais quand le focus est dans un champ de saisie — taper « 1 » dans le
+champ de restauration de sauvegarde ne doit pas noter une carte — ni en combinaison avec
+Ctrl, Alt ou Cmd, qui appartiennent au navigateur.
+
 ## Développer
 
 ```bash
@@ -77,9 +102,13 @@ src/
   data/          cartes et paquets, typés
   lib/           srs.ts (moteur), speech.ts (voix), storage.ts (persistance)
   components/    composants de présentation
-  hooks/         useProgress, useSpeech
+  hooks/         useProgress, useSpeech, useMediaQuery, useStudyShortcuts
   App.tsx
 ```
+
+Les paliers de mise en page sont écrits en classes Tailwind (`md:`, `lg:`), qui s'appliquent
+sans JavaScript dès le premier rendu. `useMediaQuery` ne sert qu'à conditionner un
+comportement — le branchement du clavier — jamais une mise en forme.
 
 Les cartes sont dans `src/data/cards.ts` :
 

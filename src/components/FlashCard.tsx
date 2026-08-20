@@ -18,9 +18,10 @@ interface FlashCardProps {
   hint?: string | undefined; // rappel discret en bas de carte
 }
 
-/** Surface commune aux deux faces. */
+/** Surface commune aux deux faces. La hauteur minimale grandit d'un palier à
+ *  l'autre : sur grand écran, une carte de 270 px se perdrait au milieu de la page. */
 const SHELL =
-  'relative flex min-h-[270px] w-full animate-card-in flex-col items-center justify-center rounded-[20px] bg-paper px-5 py-8 text-center text-ink shadow-[0_18px_40px_-22px_#000]';
+  'relative flex min-h-[270px] w-full animate-card-in flex-col items-center justify-center rounded-[20px] bg-paper px-5 py-8 text-center text-ink shadow-[0_18px_40px_-22px_#000] md:min-h-[340px] md:px-8 md:py-10 lg:min-h-[420px]';
 
 /**
  * Encadre le contenu d'une face de carte.

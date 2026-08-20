@@ -36,7 +36,7 @@ export function GradeBar({ delays, suggested = null, onGrade }: GradeBarProps) {
           key={b.grade}
           type="button"
           onClick={() => onGrade(b.grade)}
-          className={`flex min-h-14 flex-1 flex-col items-center gap-0.5 rounded-[13px] px-1.5 py-4 text-sm font-semibold active:translate-y-px ${b.className} ${
+          className={`flex min-h-14 flex-1 flex-col items-center gap-0.5 rounded-[13px] px-1.5 py-4 text-sm font-semibold active:translate-y-px md:min-h-16 md:py-5 md:text-base ${b.className} ${
             suggested === b.grade ? 'ring-2 ring-paper ring-offset-2 ring-offset-bg' : ''
           }`}
         >

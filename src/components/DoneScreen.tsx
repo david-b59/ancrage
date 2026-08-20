@@ -16,7 +16,7 @@ interface DoneScreenProps {
  */
 export function DoneScreen({ reviewed, onBack }: DoneScreenProps) {
   return (
-    <div className="my-auto p-5 text-center">
+    <div className="mx-auto my-auto w-full max-w-[600px] p-5 text-center">
       <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-full bg-mint text-3xl text-ink">
         ✓
       </div>

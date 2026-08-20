@@ -30,7 +30,7 @@ export function ModeTabs({ modes, current, onSelect }: ModeTabsProps) {
             type="button"
             aria-pressed={active}
             onClick={() => onSelect(mode)}
-            className={`min-h-11 flex-1 rounded-[10px] border px-1 py-2.5 text-[13px] transition-colors ${
+            className={`min-h-11 flex-1 rounded-[10px] border px-1 py-2.5 text-[13px] transition-colors md:min-h-12 md:text-sm ${
               active
                 ? 'border-paper bg-paper font-semibold text-ink'
                 : 'border-line bg-transparent text-dim hover:text-paper'
