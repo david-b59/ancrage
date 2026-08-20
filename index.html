@@ -1,0 +1,34 @@
+<!doctype html>
+<!--
+  Page hôte de l'application. Vite y injecte le script du paquet livré.
+  Le fond est peint ici, en dur, pour que le premier écran ne soit jamais blanc :
+  la feuille de style arrive après, et un flash blanc sur fond pétrole se voit.
+  La version d'origine, en un seul fichier HTML, est conservée dans `legacy/`.
+-->
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Ancrage</title>
+    <meta name="description" content="Révision par répétition espacée, hors ligne, sans compte." />
+    <meta name="theme-color" content="#0A1F21" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Ancrage" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #0a1f21;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Ancrage a besoin de JavaScript pour afficher les cartes.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

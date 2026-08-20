@@ -1,0 +1,4 @@
+# Avant chaque commit : formatage et lint sur les seuls fichiers modifiés.
+# Volontairement court — un hook qui prend une minute finit par être contourné.
+# La suite complète (types, tests, build) tourne dans GitHub Actions.
+npx lint-staged

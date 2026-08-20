@@ -1,0 +1,403 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ancrage</title>
+<style>
+  :root{
+    --bg:#0A1F21; --surface:#12383A; --line:#1E4A4C;
+    --paper:#F7F6F1; --ink:#0A1F21;
+    --amber:#F5C542; --mint:#7FD1B9; --brick:#E0705C; --dim:#8AA5A2;
+    --mono: ui-monospace,"SF Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --sans: system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--bg);min-height:100%}
+  body{
+    font-family:var(--sans);color:var(--paper);
+    background:radial-gradient(120% 60% at 50% 0%,#143638 0%,var(--bg) 60%);
+    background-attachment:fixed;min-height:100dvh;
+  }
+  #app{max-width:600px;margin:0 auto;padding:20px 18px calc(28px + env(safe-area-inset-bottom));min-height:100dvh;display:flex;flex-direction:column}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+
+  .brand{display:flex;align-items:baseline;gap:10px;margin-bottom:2px}
+  .brand h1{font-size:29px;margin:0;letter-spacing:-.02em;font-weight:650}
+  .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--amber);align-self:center}
+  .tagline{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:2px 0 18px}
+
+  .track{height:7px;background:var(--line);border-radius:99px;overflow:hidden}
+  .track>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--mint),var(--amber));transition:width .45s cubic-bezier(.2,.8,.2,1)}
+  .stat{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--dim);margin-top:8px}
+
+  .section{display:flex;align-items:center;gap:10px;margin:24px 0 12px}
+  .section:after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .modes{display:flex;gap:7px;margin:18px 0}
+  .modes button{flex:1;font:inherit;font-size:13px;padding:11px 4px;cursor:pointer;background:transparent;border:1px solid var(--line);border-radius:10px;color:var(--dim);transition:.18s}
+  .modes button[aria-pressed="true"]{background:var(--paper);border-color:var(--paper);color:var(--ink);font-weight:650}
+
+  .deck{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:10px;font:inherit;color:var(--paper);cursor:pointer;transition:.18s}
+  .deck:active{transform:scale(.985)}
+  .deck .txt{flex:1;min-width:0}
+  .deck b{display:block;font-size:16px;font-weight:600;margin-bottom:3px}
+  .deck .sub{font-size:12px;color:var(--dim)}
+  .ring{position:relative;width:44px;height:44px;flex:none}
+  .ring svg{transform:rotate(-90deg)}
+  .ring span{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--amber)}
+  .ring span.ok{color:var(--mint)}
+
+  /* encadré d'indication */
+  .legend{
+    background:#154244;border:1px solid #24595B;border-left:4px solid var(--amber);
+    border-radius:12px;padding:15px 16px;margin-top:20px;
+  }
+  .legend h3{margin:0 0 10px;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);font-weight:600}
+  .legend p{margin:0 0 10px;font-size:13px;line-height:1.6;color:#C8DAD7}
+  .keys{display:flex;flex-direction:column;gap:7px}
+  .key{display:flex;align-items:center;gap:10px;font-size:12.5px;color:#C8DAD7}
+  .swatch{width:12px;height:12px;border-radius:4px;flex:none}
+  .key b{font-family:var(--mono);font-size:11.5px;color:var(--paper);font-weight:600}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:15px 16px;margin-top:12px}
+  .panel h3{margin:0 0 8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);font-weight:600}
+  .panel p{margin:0 0 12px;font-size:13px;line-height:1.55;color:#C8DAD7}
+  select{width:100%;background:#0E2B2D;color:var(--paper);border:1px solid var(--line);border-radius:10px;padding:11px;font:inherit;font-size:13px}
+  .ghost{background:transparent;border:1px solid var(--mint);color:var(--mint);border-radius:99px;padding:9px 16px;font:inherit;font-size:13px;cursor:pointer}
+
+  .stage{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
+  .card{background:var(--paper);color:var(--ink);border-radius:20px;padding:30px 22px;min-height:270px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;position:relative;box-shadow:0 18px 40px -22px #000;animation:in .28s cubic-bezier(.2,.8,.2,1)}
+  @keyframes in{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:none}}
+  .card .tag{position:absolute;top:14px;left:18px;font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#7A908D}
+  .prompt{font-size:25px;line-height:1.3;font-weight:600}
+  .prompt.mono{font-family:var(--mono);font-size:21px;font-weight:500}
+  .answer{font-size:23px;line-height:1.3;font-weight:600}
+  .answer.mono{font-family:var(--mono);font-size:21px;font-weight:500}
+  .sub-answer{font-size:16px;color:#4A605D;margin-top:8px}
+  .example{font-size:14px;line-height:1.55;color:#4A605D;font-style:italic;margin-top:16px;padding-top:14px;border-top:1px solid #E2E0D6;max-width:36ch}
+  .hint{position:absolute;bottom:14px;font-family:var(--mono);font-size:10.5px;color:#94A8A5;letter-spacing:.06em}
+  .tools{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap;justify-content:center}
+  .tool{display:inline-flex;align-items:center;gap:7px;background:var(--ink);color:var(--paper);border:none;border-radius:99px;padding:10px 16px;font:inherit;font-size:13px;cursor:pointer;text-decoration:none}
+  .tool.alt{background:transparent;color:var(--ink);border:1px solid #C9CCC2}
+  .tool svg{width:14px;height:14px;fill:currentColor}
+  .wave{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:96px;height:96px;border-radius:50%;background:var(--ink);display:grid;place-items:center}
+  .wave svg{width:34px;height:34px;fill:var(--paper)}
+  .wave.on{animation:pulse 1s ease-out infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(10,31,33,.28)}100%{box-shadow:0 0 0 26px rgba(10,31,33,0)}}
+
+  .grade{display:flex;gap:9px;margin-top:16px}
+  .grade button{flex:1;font:inherit;font-size:14px;font-weight:600;padding:16px 6px;border:none;border-radius:13px;cursor:pointer;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:3px}
+  .grade small{font-family:var(--mono);font-size:10px;font-weight:500;opacity:.65}
+  .g-again{background:var(--brick);color:#fff}
+  .g-hard{background:var(--amber)}
+  .g-good{background:var(--mint)}
+  .grade button:active{transform:translateY(1px)}
+
+  .flat{background:none;border:none;font:inherit;font-size:13px;color:var(--dim);padding:14px 0;cursor:pointer;text-decoration:underline;display:block;margin:0 auto}
+  .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .done{text-align:center;margin:auto 0;padding:20px}
+  .done .mark{width:64px;height:64px;border-radius:50%;background:var(--mint);color:var(--ink);display:grid;place-items:center;font-size:30px;margin:0 auto 18px}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div id="app"></div>
+
+<script>
+const CARDS = [
+ {d:"m",en:"Can you hear me?",fr:"Vous m'entendez ?",ex:"Sorry, can you hear me? My mic was muted."},
+ {d:"m",en:"Let's get started.",fr:"On commence.",ex:"Everyone's here, so let's get started."},
+ {d:"m",en:"Can you repeat that, please?",fr:"Peux-tu répéter, s'il te plaît ?",ex:"Sorry, can you repeat that? You broke up a bit."},
+ {d:"m",en:"Could you speak more slowly?",fr:"Peux-tu parler plus lentement ?",ex:"Could you speak a bit more slowly, please?"},
+ {d:"m",en:"I didn't catch that.",fr:"Je n'ai pas saisi.",ex:"Sorry, I didn't catch the last part."},
+ {d:"m",en:"Just to make sure I understood…",fr:"Juste pour être sûr d'avoir compris…",ex:"Just to make sure I understood: you want the report by Friday?"},
+ {d:"m",en:"I'll get back to you.",fr:"Je reviens vers toi.",ex:"I'll check the data and get back to you tomorrow."},
+ {d:"m",en:"I'm working on it.",fr:"J'y travaille.",ex:"It's not finished yet, I'm working on it."},
+ {d:"m",en:"It's on my plate.",fr:"C'est à ma charge.",ex:"The refresh issue is on my plate this week."},
+ {d:"m",en:"Let me share my screen.",fr:"Je partage mon écran.",ex:"Let me share my screen and walk you through it."},
+ {d:"m",en:"to walk you through it",fr:"vous expliquer étape par étape",ex:"I'll walk you through the model quickly."},
+ {d:"m",en:"Does that make sense?",fr:"C'est clair pour vous ?",ex:"That's the logic behind the KPI. Does that make sense?"},
+ {d:"m",en:"I'm not sure I follow.",fr:"Je ne suis pas sûr de suivre.",ex:"Sorry, I'm not sure I follow — which table do you mean?"},
+ {d:"m",en:"Let's take it offline.",fr:"On en reparle hors réunion.",ex:"Good point, but let's take it offline."},
+ {d:"m",en:"Can we circle back to this?",fr:"Peut-on y revenir plus tard ?",ex:"Can we circle back to this next week?"},
+ {d:"m",en:"Any blockers?",fr:"Des points bloquants ?",ex:"Quick round: any blockers on your side?"},
+ {d:"m",en:"I'll keep you posted.",fr:"Je te tiens au courant.",ex:"I'll keep you posted once the load is finished."},
+ {d:"m",en:"That works for me.",fr:"Ça me va.",ex:"Thursday at two? That works for me."},
+
+ {d:"t",en:"a requirement",fr:"un besoin, une exigence",ex:"The business gave us new requirements for the report."},
+ {d:"t",en:"the scope",fr:"le périmètre",ex:"That KPI is out of scope for this release."},
+ {d:"t",en:"a stakeholder",fr:"une partie prenante",ex:"I need to align with the stakeholders first."},
+ {d:"t",en:"the business",fr:"le métier, les utilisateurs métier",ex:"The business asked for a monthly view."},
+ {d:"t",en:"a dataset",fr:"un jeu de données",ex:"The dataset comes from the Fabric warehouse."},
+ {d:"t",en:"to refresh",fr:"actualiser (les données)",ex:"The dataset refreshes every morning at six."},
+ {d:"t",en:"a query",fr:"une requête",ex:"This query is too slow, we need to optimise it."},
+ {d:"t",en:"a row / a column",fr:"une ligne / une colonne",ex:"Add a column to flag cancelled orders."},
+ {d:"t",en:"a measure",fr:"une mesure (DAX)",ex:"I wrote a measure to compute the average delay."},
+ {d:"t",en:"to compute",fr:"calculer",ex:"The measure computes the total on the fly."},
+ {d:"t",en:"accurate",fr:"exact, fiable",ex:"The numbers are not accurate, we have duplicates."},
+ {d:"t",en:"a duplicate",fr:"un doublon",ex:"We had duplicates after the last load."},
+ {d:"t",en:"to filter out",fr:"écarter, exclure",ex:"We filter out the test invoices."},
+ {d:"t",en:"a workaround",fr:"une solution de contournement",ex:"It's not clean, it's just a workaround."},
+ {d:"t",en:"an issue",fr:"un problème",ex:"There's a known issue with the date table."},
+ {d:"t",en:"to troubleshoot",fr:"diagnostiquer un problème",ex:"I spent the morning troubleshooting the pipeline."},
+ {d:"t",en:"to deploy",fr:"déployer, mettre en production",ex:"We deploy to production on Thursday."},
+ {d:"t",en:"a deadline",fr:"une échéance",ex:"The deadline is the end of the month."},
+ {d:"t",en:"a follow-up",fr:"un suivi, une relance",ex:"Let's do a follow-up next Monday."},
+ {d:"t",en:"to be in charge of",fr:"être responsable de",ex:"I'm in charge of the billing report."},
+
+ {d:"e",en:"gonna",fr:"going to — aller (futur)",ex:"I'm gonna check that."},
+ {d:"e",en:"wanna",fr:"want to — vouloir",ex:"Do you wanna join?"},
+ {d:"e",en:"kinda",fr:"kind of — un peu, plutôt",ex:"It's kinda slow."},
+ {d:"e",en:"lemme",fr:"let me — laisse-moi",ex:"Lemme check."},
+ {d:"e",en:"dunno",fr:"don't know — je ne sais pas",ex:"I dunno yet."},
+ {d:"e",en:"gotta",fr:"have to — devoir",ex:"We gotta fix it."},
+ {d:"e",en:"We've done it, I'll send it.",fr:"have et will contractés, presque inaudibles",ex:"We have done it, I will send it."},
+ {d:"e",en:"I can't do it.",fr:"can't appuyé, can faible : le piège classique",ex:"I can do it. I can't do it."},
+ {d:"e",en:"check it out",fr:"liaison : les mots se collent",ex:"Check it out, an issue came up."},
+ {d:"e",en:"I finished it.",fr:"le -ed final est presque muet",ex:"I finished it and pushed it."}
+];
+
+const DECKS = {
+  m:{name:"Réunion & visio", sub:"phrases toutes faites"},
+  t:{name:"Data & tech", sub:"ton métier au quotidien"},
+  e:{name:"Ce que ton oreille rate", sub:"formes réduites, liaisons"}
+};
+const MODES = {fr_en:"FR → EN", en_fr:"EN → FR", listen:"Écoute"};
+/* Clé de stockage : NE JAMAIS la modifier — c'est elle qui garde la progression
+   d'une version à l'autre. Les anciennes clés sont relues une seule fois. */
+const KEY = "ancrage.progress";
+const LEGACY_KEYS = ["ancrage_v3", "eng_tech_v2", "eng_tech_lot1_v1"];
+const DAY = 86400000;
+const SESSION = 15;
+const ARCHIVE_AT = 365;   // intervalle (jours) à partir duquel la carte sort du cycle
+
+let state = {cards:{}, mode:"fr_en", lastDay:null, day:1, voice:null, rate:0.92};
+let view = {screen:"home", deck:null, queue:[], i:0, flipped:false, done:0};
+let voices = [], voice = null;
+
+const store = {
+  async get(){
+    try{ if(window.storage){ const r = await window.storage.get(KEY); if(r && r.value) return r.value; } }catch(e){}
+    try{
+      const v = window.localStorage.getItem(KEY);
+      if(v) return v;
+      for(const k of LEGACY_KEYS){
+        const old = window.localStorage.getItem(k);
+        if(old) return old;          // reprise d'une version antérieure
+      }
+    }catch(e){}
+    return null;
+  },
+  async set(v){
+    try{ if(window.storage){ await window.storage.set(KEY, v); return; } }catch(e){}
+    try{ window.localStorage.setItem(KEY, v); }catch(e){}
+  }
+};
+const today = () => { const d=new Date(); return Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()); };
+const id = c => c.d + "|" + c.en;
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+
+async function load(){
+  const raw = await store.get();
+  if(raw){ try{ state = Object.assign(state, JSON.parse(raw)); }catch(e){} }
+  const t = today();
+  if(state.lastDay !== t){ state.day = state.lastDay ? (state.day||1)+1 : 1; state.lastDay = t; save(); }
+}
+function save(){ store.set(JSON.stringify(state)); }
+
+/* ---------- SM-2 + archivage ---------- */
+const rec = c => state.cards[id(c)] || null;
+const archived = c => { const s=rec(c); return !!(s && s.arch); };
+const isDue = c => { const s=rec(c); if(s&&s.arch) return false; return !s || s.due <= today(); };
+const mature = c => { const s=rec(c); return !!(s && (s.iv>=21 || s.arch)); };
+const dueCount = d => CARDS.filter(c=>c.d===d && isDue(c)).length;
+function maturePct(d){ const all=CARDS.filter(c=>c.d===d); return all.filter(mature).length/all.length; }
+const archivedAll = () => CARDS.filter(archived);
+
+function grade(c, q){
+  const k = id(c);
+  const s = state.cards[k] || {reps:0, ease:2.5, iv:0, due:0, arch:false};
+  if(q===0){ s.reps=0; s.iv=1; s.ease=Math.max(1.3, s.ease-0.20); }
+  else if(q===1){ s.reps+=1; s.ease=Math.max(1.3, s.ease-0.15); s.iv = s.reps===1 ? 1 : Math.max(1, Math.round(s.iv*1.2)); }
+  else{
+    s.reps+=1; s.ease=Math.min(2.8, s.ease+0.05);
+    if(s.reps===1) s.iv=1; else if(s.reps===2) s.iv=3; else s.iv=Math.round(s.iv*s.ease);
+  }
+  s.arch = s.iv >= ARCHIVE_AT;
+  s.iv = Math.min(s.iv, ARCHIVE_AT);
+  s.due = today() + s.iv*DAY;
+  state.cards[k] = s;
+  save();
+}
+function nextLabel(c,q){
+  const s = rec(c) || {reps:0, ease:2.5, iv:0};
+  let iv;
+  if(q===0) iv=1;
+  else if(q===1) iv = s.reps===0 ? 1 : Math.max(1,Math.round(s.iv*1.2));
+  else if(s.reps===0) iv=1; else if(s.reps===1) iv=3; else iv=Math.round(s.iv*s.ease);
+  if(iv>=ARCHIVE_AT) return "archivée";
+  if(iv>=60) return Math.round(iv/30)+" mois";
+  return iv+" j";
+}
+function unarchive(){
+  Object.values(state.cards).forEach(s=>{ if(s.arch){ s.arch=false; s.iv=30; s.due=today(); } });
+  save(); render();
+}
+
+/* ---------- voix ---------- */
+function loadVoices(){
+  voices = (speechSynthesis.getVoices()||[]).filter(v=>/^en([-_]|$)/i.test(v.lang));
+  voice = voices.find(v=>v.voiceURI===state.voice)
+       || voices.find(v=>/en[-_]US/i.test(v.lang) && /google|natural|neural|enhanced/i.test(v.name))
+       || voices.find(v=>/en[-_]US/i.test(v.lang)) || voices[0] || null;
+}
+function say(text, rate){
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    if(voice){ u.voice=voice; u.lang=voice.lang; } else u.lang="en-US";
+    u.rate = rate || state.rate; u.pitch = 1;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+const SPK='<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 2v2a8 8 0 0 1 0 16v2A10 10 0 0 0 14 2z"/></svg>';
+const SLOW='<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 5h-2v6l5 3 1-1.6-4-2.4V7z"/></svg>';
+const HUMAN='<svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-5 0-9 2.5-9 5v3h18v-3c0-2.5-4-5-9-5z"/></svg>';
+const youglish = t => "https://youglish.com/pronounce/" + encodeURIComponent(t) + "/english";
+
+function ringHtml(pct, due){
+  const r=19, C=2*Math.PI*r;
+  return `<div class="ring"><svg width="44" height="44" viewBox="0 0 44 44">
+    <circle cx="22" cy="22" r="${r}" fill="none" stroke="#1E4A4C" stroke-width="4"/>
+    <circle cx="22" cy="22" r="${r}" fill="none" stroke="${due?'#F5C542':'#7FD1B9'}" stroke-width="4" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct)}"/>
+  </svg><span class="${due?'':'ok'}">${due||'✓'}</span></div>`;
+}
+
+function startDeck(d){
+  const due = CARDS.filter(c=>c.d===d && isDue(c));
+  const pool = due.length ? due : CARDS.filter(c=>c.d===d && !archived(c));
+  if(!pool.length){ return; }
+  view = {screen:"study", deck:d, queue:pool.sort(()=>Math.random()-0.5).slice(0,SESSION), i:0, flipped:false, done:0};
+  render();
+  if(state.mode==="listen") setTimeout(()=>say(view.queue[0].en), 300);
+}
+
+function render(){
+  const app = document.getElementById("app");
+
+  if(view.screen==="home"){
+    const done = CARDS.filter(mature).length, total = CARDS.length, arch = archivedAll().length;
+    app.innerHTML = `
+      <div class="brand"><span class="dot"></span><h1>Ancrage</h1></div>
+      <div class="tagline">Révision espacée</div>
+      <div class="track"><i style="width:${Math.round(done/total*100)}%"></i></div>
+      <div class="stat"><span>${done}/${total} ancrées</span><span>jour ${state.day}</span></div>
+
+      <div class="section"><span class="eyebrow">Anglais · Lot 1</span></div>
+      <div class="modes">
+        ${Object.keys(MODES).map(m=>`<button data-mode="${m}" aria-pressed="${state.mode===m}">${MODES[m]}</button>`).join("")}
+      </div>
+      ${Object.keys(DECKS).map(d=>{
+        const n = dueCount(d);
+        return `<button class="deck" data-deck="${d}">
+          <span class="txt"><b>${DECKS[d].name}</b><span class="sub">${DECKS[d].sub}</span></span>
+          ${ringHtml(maturePct(d), n)}
+        </button>`;
+      }).join("")}
+
+      <div class="legend">
+        <h3>Comment lire cet écran</h3>
+        <p>Le chiffre dans l'anneau = cartes à revoir aujourd'hui. L'anneau qui se remplit = part du paquet déjà ancrée.</p>
+        <div class="keys">
+          <div class="key"><span class="swatch" style="background:var(--brick)"></span><span><b>À revoir</b> — repart à 1 jour</span></div>
+          <div class="key"><span class="swatch" style="background:var(--amber)"></span><span><b>Difficile</b> — allonge à peine</span></div>
+          <div class="key"><span class="swatch" style="background:var(--mint)"></span><span><b>Je savais</b> — l'écart ×2,5</span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Cartes archivées</h3>
+        <p>${arch
+            ? `${arch} carte${arch>1?"s":""} a dépassé un an d'intervalle. Elles ne reviennent plus dans le cycle.`
+            : `Une carte qui atteint un an d'intervalle sort du cycle : tu n'as plus besoin de la revoir. Tu peux la rappeler quand tu veux.`}</p>
+        ${arch ? `<button class="ghost" id="unarch">Remettre en circulation</button>` : ""}
+      </div>
+
+      <div class="panel">
+        <h3>Voix</h3>
+        <select id="voice">${voices.length
+          ? voices.map(v=>`<option value="${esc(v.voiceURI)}" ${voice&&v.voiceURI===voice.voiceURI?"selected":""}>${esc(v.name)} · ${v.lang}</option>`).join("")
+          : `<option>Aucune voix anglaise détectée</option>`}</select>
+      </div>`;
+    app.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{state.mode=b.dataset.mode;save();render();});
+    app.querySelectorAll("[data-deck]").forEach(b=>b.onclick=()=>startDeck(b.dataset.deck));
+    const u = document.getElementById("unarch"); if(u) u.onclick = unarchive;
+    const sel = document.getElementById("voice");
+    if(sel) sel.onchange = ()=>{ state.voice=sel.value; save(); loadVoices(); say("Ready when you are."); };
+    return;
+  }
+
+  if(view.i >= view.queue.length){
+    app.innerHTML = `<div class="done">
+      <div class="mark">✓</div>
+      <h1 style="margin-bottom:6px">Paquet terminé</h1>
+      <p style="color:var(--dim);font-size:14px;line-height:1.6">${view.done} cartes revues.<br>Va replacer cinq de ces expressions à l'oral aujourd'hui.</p>
+      <button class="flat" id="back">Retour aux paquets</button></div>`;
+    document.getElementById("back").onclick=()=>{view.screen="home";render();};
+    return;
+  }
+
+  const c = view.queue[view.i], m = state.mode;
+  let tag, face;
+  if(view.flipped){
+    tag = "Réponse";
+    if(m==="fr_en") face = `<div class="answer mono">${esc(c.en)}</div>`;
+    else if(m==="en_fr") face = `<div class="answer">${esc(c.fr)}</div>`;
+    else face = `<div class="answer mono">${esc(c.en)}</div><div class="sub-answer">${esc(c.fr)}</div>`;
+    face += `<div class="example">${esc(c.ex)}</div>
+      <div class="tools">
+        <button class="tool" id="speak">${SPK} Réécouter</button>
+        <button class="tool alt" id="slow">${SLOW} Lent</button>
+        <a class="tool alt" href="${youglish(c.en)}" target="_blank" rel="noopener" id="yg">${HUMAN} Voix réelle</a>
+      </div>`;
+  }else{
+    if(m==="fr_en"){ tag="Français → anglais"; face=`<div class="prompt">${esc(c.fr)}</div><div class="hint">touche la carte</div>`; }
+    else if(m==="en_fr"){ tag="Anglais → français"; face=`<div class="prompt mono">${esc(c.en)}</div><div class="hint">touche la carte</div>`; }
+    else { tag="Écoute"; face=`<div class="wave on" id="wave">${SPK}</div><div class="hint">touche la carte pour la réponse</div>`; }
+  }
+
+  app.innerHTML = `
+    <div class="row">
+      <span class="eyebrow">${DECKS[view.deck].name}</span>
+      <span class="eyebrow">${view.i+1} / ${view.queue.length}</span>
+    </div>
+    <div class="track"><i style="width:${Math.round(view.i/view.queue.length*100)}%"></i></div>
+    <div class="stage">
+      <div class="card" id="card"><div class="tag">${tag}</div>${face}</div>
+      ${view.flipped ? `<div class="grade">
+        <button class="g-again" data-q="0">À revoir<small>${nextLabel(c,0)}</small></button>
+        <button class="g-hard"  data-q="1">Difficile<small>${nextLabel(c,1)}</small></button>
+        <button class="g-good"  data-q="2">Je savais<small>${nextLabel(c,2)}</small></button>
+      </div>` : ""}
+    </div>
+    <button class="flat" id="quit">Quitter le paquet</button>`;
+
+  document.getElementById("card").onclick = e=>{
+    if(e.target.closest(".tools")) return;
+    if(m==="listen" && !view.flipped && e.target.closest("#wave")){ say(c.en); return; }
+    if(!view.flipped){ view.flipped=true; render(); if(m!=="listen") say(c.en+". "+c.ex); }
+  };
+  const sp=document.getElementById("speak"); if(sp) sp.onclick=e=>{e.stopPropagation(); say(c.en+". "+c.ex);};
+  const sl=document.getElementById("slow");  if(sl) sl.onclick=e=>{e.stopPropagation(); say(c.en+". "+c.ex, 0.6);};
+  const yg=document.getElementById("yg");    if(yg) yg.onclick=e=>e.stopPropagation();
+  app.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{
+    grade(c, +b.dataset.q);
+    view.i++; view.flipped=false; view.done++;
+    render();
+    if(state.mode==="listen" && view.i<view.queue.length) setTimeout(()=>say(view.queue[view.i].en), 260);
+  });
+  document.getElementById("quit").onclick=()=>{ speechSynthesis.cancel(); view.screen="home"; render(); };
+}
+
+if("speechSynthesis" in window){
+  speechSynthesis.onvoiceschanged = ()=>{ loadVoices(); if(view.screen==="home") render(); };
+}
+load().then(()=>{ loadVoices(); render(); });
+</script>

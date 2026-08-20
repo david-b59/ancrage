@@ -1,0 +1,10 @@
+dist
+coverage
+node_modules
+package-lock.json
+# Scripts de hook : ce sont des fichiers shell sans extension, Prettier n'a pas
+# de parseur pour eux.
+.husky
+# Version d'origine en un seul fichier : conservée telle quelle, à titre de
+# référence fonctionnelle. La reformater brouillerait la comparaison.
+legacy

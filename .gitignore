@@ -1,0 +1,25 @@
+# Dépendances et sortie de build
+node_modules
+dist
+coverage
+.vite
+
+# Secrets : aucun fichier d'environnement n'est versionné, sauf l'exemple, qui ne
+# contient que des noms de variables et aucune valeur.
+.env
+.env.*
+!.env.example
+
+# Réglages d'outils locaux, propres à une machine
+.claude
+
+# Systèmes et éditeurs
+.DS_Store
+Thumbs.db
+*.local
+.idea
+.vscode/*
+!.vscode/extensions.json
+
+# Netlify
+.netlify

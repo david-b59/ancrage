@@ -1,0 +1,47 @@
+# Déploiement Netlify.
+# Build `npm run build`, dossier publié `dist`. L'adresse de publication doit
+# rester stable : `localStorage` est lié à l'origine, changer de domaine
+# détacherait l'utilisateur de sa progression aussi sûrement que changer la clé.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Application d'une seule page : toute adresse renvoie vers `index.html`.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Le service worker ne doit jamais être servi depuis un cache périmé, sans quoi
+# une nouvelle version resterait invisible pendant des jours.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Les fichiers produits par Vite portent une empreinte dans leur nom : ils peuvent
+# être mis en cache définitivement.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Rien n'est chargé depuis l'extérieur, la politique peut donc être stricte.
+# `connect-src 'self'` suffit : l'application ne parle à aucun serveur.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'none'"
+    Referrer-Policy = "no-referrer"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Permissions-Policy = "microphone=(self), camera=(), geolocation=(), interest-cohort=()"

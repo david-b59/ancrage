@@ -1,0 +1,29 @@
+# Mises à jour de dépendances.
+# Les montées mineures et correctives sont regroupées en une seule pull request
+# par écosystème : sur un projet à une seule personne, une PR par paquet devient
+# du bruit qu'on finit par ignorer — et les mises à jour de sécurité avec.
+# Les montées majeures restent séparées : elles demandent une lecture.
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      mineures:
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        update-types:
+          - minor
+          - patch

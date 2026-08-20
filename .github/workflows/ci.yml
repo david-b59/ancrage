@@ -1,0 +1,46 @@
+# Intégration continue.
+# Les étapes s'enchaînent dans l'ordre et s'arrêtent au premier problème : lint,
+# types, tests, build. Une branche qui ne construit pas ne doit pas atteindre
+# `main`, d'où l'exécution sur les pull requests autant que sur les push.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Un nouveau push annule la vérification en cours sur la même branche : inutile
+# de payer deux fois pour un état dépassé.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Vérification des types
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm run test
+
+      - name: Build
+        run: npm run build

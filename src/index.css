@@ -1,0 +1,99 @@
+/*
+ * Feuille de style unique : palette, polices et quelques règles de base.
+ * Tout le reste est écrit en classes Tailwind dans les composants. La palette est
+ * celle de `index.html`, reprise à l'identique — c'est la signature de l'interface.
+ */
+@import 'tailwindcss';
+
+@theme {
+  /* Fond pétrole profond, surfaces et lignes : le décor sombre sur lequel la
+     carte de révision se détache comme une feuille de papier posée. */
+  --color-bg: #0a1f21;
+  --color-surface: #12383a;
+  --color-line: #1e4a4c;
+  --color-elevated: #154244;
+  --color-edge: #24595b;
+  --color-field: #0e2b2d;
+
+  /* La carte : papier clair, encre sombre. Ne pas diluer ce contraste. */
+  --color-paper: #f7f6f1;
+  --color-ink: #0a1f21;
+  --color-ink-soft: #4a605d;
+  --color-rule: #e2e0d6;
+
+  /* Trois signaux de couleur, un par état de mémorisation. */
+  --color-amber: #f5c542; /* ce qui est dû aujourd'hui, et la note « Difficile » */
+  --color-mint: #7fd1b9; /* ce qui est acquis, et la note « Je savais » */
+  --color-brick: #e0705c; /* l'échec, et la note « À revoir » */
+  --color-dim: #8aa5a2; /* texte secondaire sur fond sombre */
+  --color-muted: #c8dad7; /* texte courant des encadrés */
+
+  /* Anglais en chasse fixe, français en police système : l'œil distingue les
+     deux langues avant même de lire. */
+  --font-mono: ui-monospace, 'SF Mono', 'Roboto Mono', Menlo, Consolas, monospace;
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --animate-card-in: card-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-listening: listening 1s ease-out infinite;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes listening {
+  0% {
+    box-shadow: 0 0 0 0 rgb(10 31 33 / 0.28);
+  }
+  100% {
+    box-shadow: 0 0 0 26px rgb(10 31 33 / 0);
+  }
+}
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: var(--color-bg);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-paper);
+    /* Halo sombre en haut de page, fixé pour ne pas défiler avec le contenu. */
+    background: radial-gradient(120% 60% at 50% 0%, #143638 0%, var(--color-bg) 60%);
+    background-attachment: fixed;
+    min-height: 100dvh;
+  }
+
+  /* Focus clavier toujours visible, y compris sur les surfaces claires. */
+  :focus-visible {
+    outline: 2px solid var(--color-amber);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* Personne ne doit subir d'animation qu'il n'a pas demandée. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition: none !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
